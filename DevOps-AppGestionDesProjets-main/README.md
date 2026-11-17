@@ -224,6 +224,5 @@ pipeline {
 
 ---
 
-## 👤 Auteur
 
-**ESPRIT — UP ASI**  
+  
