@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JAVA_HOME'
+        maven 'M2_HOME'
+    }
+
+    triggers {
+        githubPush()
+    }
+
+    stages {
+        stage('Récupération du projet') {
+            steps {
+                git branch: 'main', url: 'https://github.com/yosrthabet/Devops'
+            }
+        }
+
+        stage('Tests unitaires') {
+            steps {
+                dir('backend') {
+                    sh 'mvn clean test'
+                }
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'backend/target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Création du livrable') {
+            steps {
+                dir('backend') {
+                    sh 'mvn package -DskipTests'
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'backend/target/*.jar', fingerprint: true
+                }
+            }
+        }
+    }
+
+    post {
+        failure {
+            mail to: 'yosrthabet0@gmail.com',
+                 subject: "Build échoué : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Le build a échoué.\nDétails : ${env.BUILD_URL}console"
+        }
+    }
+}
