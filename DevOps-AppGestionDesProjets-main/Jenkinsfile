@@ -19,26 +19,26 @@ pipeline {
 
         stage('Tests unitaires') {
             steps {
-                dir('backend') {
+                dir('DevOps-AppGestionDesProjets-main/backend') {
                     sh 'mvn clean test'
                 }
             }
             post {
                 always {
-                    junit allowEmptyResults: true, testResults: 'backend/target/surefire-reports/*.xml'
+                    junit allowEmptyResults: true, testResults: 'DevOps-AppGestionDesProjets-main/backend/target/surefire-reports/*.xml'
                 }
             }
         }
 
         stage('Création du livrable') {
             steps {
-                dir('backend') {
+                dir('DevOps-AppGestionDesProjets-main/backend') {
                     sh 'mvn package -DskipTests'
                 }
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'backend/target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: 'DevOps-AppGestionDesProjets-main/backend/target/*.jar', fingerprint: true
                 }
             }
         }
